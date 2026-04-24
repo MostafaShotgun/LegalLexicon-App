@@ -1,0 +1,1883 @@
+<!DOCTYPE html>
+<html lang="ar" data-theme="light">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>📘 LegalLexicon — قاموس قانوني تفاعلي</title>
+    <style>
+        :root {
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --surface-hover: #f1f5f9;
+            --text: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --border: #e2e8f0;
+            --border-light: #f1f5f9;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --accent-soft: #eff6ff;
+            --accent-subtle: #dbeafe;
+            --success: #10b981;
+            --success-soft: #ecfdf5;
+            --danger: #ef4444;
+            --danger-soft: #fef2f2;
+            --warning: #f59e0b;
+            --warning-soft: #fffbeb;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.06), 0 2px 4px rgba(0, 0, 0, 0.04);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.08), 0 4px 10px rgba(0, 0, 0, 0.04);
+            --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.1);
+            --radius-sm: 8px;
+            --radius: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-sans: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+            --font-ar: 'Segoe UI', 'Tahoma', 'Noto Naskh Arabic', sans-serif;
+            --card-saved-border: #10b981;
+            --card-saved-glow: rgba(16, 185, 129, 0.12);
+            --skeleton: #e2e8f0;
+            --skeleton-shine: #f1f5f9;
+            --overlay: rgba(15, 23, 42, 0.5);
+            --toast-bg: #0f172a;
+            --toast-text: #f8fafc;
+        }
+
+        [data-theme="dark"] {
+            --bg: #0b1120;
+            --surface: #1a2332;
+            --surface-hover: #1f2b3a;
+            --text: #e2e8f0;
+            --text-secondary: #cbd5e1;
+            --text-muted: #64748b;
+            --border: #2d3a4a;
+            --border-light: #243044;
+            --accent: #60a5fa;
+            --accent-hover: #3b82f6;
+            --accent-soft: #1e293b;
+            --accent-subtle: #1e3a5f;
+            --success: #34d399;
+            --success-soft: #0f2f24;
+            --danger: #f87171;
+            --danger-soft: #2d1215;
+            --warning: #fbbf24;
+            --warning-soft: #2d2410;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.35);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.4);
+            --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.5);
+            --card-saved-glow: rgba(52, 211, 153, 0.18);
+            --skeleton: #2d3a4a;
+            --skeleton-shine: #354355;
+            --overlay: rgba(0, 0, 0, 0.7);
+            --toast-bg: #e2e8f0;
+            --toast-text: #0f172a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: var(--font-sans);
+            transition: background-color var(--transition-slow), color var(--transition-slow);
+            min-height: 100vh;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+
+        /* ──────────────── LAYOUT ──────────────── */
+        .app-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 16px;
+        }
+
+        /* ──────────────── HEADER ──────────────── */
+        .app-header {
+            text-align: center;
+            padding: 2rem 0 1.25rem;
+            position: relative;
+        }
+        .header-top-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+        .app-logo {
+            font-size: 2.6rem;
+            letter-spacing: -0.5px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: inline-block;
+        }
+        .app-subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-top: 2px;
+            font-weight: 400;
+        }
+
+        /* ──────────────── THEME TOGGLE ──────────────── */
+        .theme-toggle-wrap {
+            position: absolute;
+            top: 18px;
+            right: 0;
+            z-index: 10;
+        }
+        .theme-toggle {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 50px;
+            width: 52px;
+            height: 28px;
+            cursor: pointer;
+            position: relative;
+            transition: all var(--transition);
+            box-shadow: var(--shadow-sm);
+            outline: none;
+        }
+        .theme-toggle:focus-visible {
+            box-shadow: 0 0 0 3px var(--accent-subtle);
+        }
+        .theme-toggle-knob {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #fbbf24;
+            transition: all var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        [data-theme="dark"] .theme-toggle-knob {
+            left: 25px;
+            background: #6366f1;
+        }
+        .theme-toggle-icon {
+            pointer-events: none;
+            line-height: 1;
+        }
+
+        /* ──────────────── SEARCH ──────────────── */
+        .search-wrapper {
+            display: flex;
+            justify-content: center;
+            margin: 0.6rem 0 1rem;
+        }
+        .search-input-group {
+            position: relative;
+            width: 100%;
+            max-width: 520px;
+        }
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+            font-size: 1.1rem;
+            transition: color var(--transition);
+        }
+        .search-input {
+            width: 100%;
+            padding: 0.7rem 1rem 0.7rem 2.8rem;
+            font-size: 1rem;
+            border-radius: 50px;
+            border: 2px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            transition: all var(--transition);
+            font-family: var(--font-sans);
+            box-shadow: var(--shadow-sm);
+            outline: none;
+        }
+        .search-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px var(--accent-subtle);
+        }
+        .search-input::placeholder {
+            color: var(--text-muted);
+        }
+        .search-clear {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            padding: 4px;
+            border-radius: 50%;
+            transition: all var(--transition);
+            display: none;
+            line-height: 1;
+        }
+        .search-clear.visible {
+            display: block;
+        }
+        .search-clear:hover {
+            color: var(--danger);
+            background: var(--danger-soft);
+        }
+        .search-hint {
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: -0.4rem;
+            margin-bottom: 0.8rem;
+            transition: opacity var(--transition);
+        }
+
+        /* ──────────────── CONTROLS ROW ──────────────── */
+        .controls-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 1rem;
+        }
+        .select-box {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 50px;
+            padding: 0.45rem 1rem;
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition);
+            cursor: pointer;
+        }
+        .select-box label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+        .select-box select {
+            border: none;
+            outline: none;
+            font-size: 0.9rem;
+            color: var(--text);
+            background: var(--surface);
+            cursor: pointer;
+            font-family: var(--font-sans);
+            min-width: 100px;
+        }
+
+        /* ──────────────── FILTER PILLS ──────────────── */
+        .filter-pills {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 1.4rem;
+        }
+        .pill-btn {
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            border: 2px solid var(--border);
+            background: var(--surface);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.88rem;
+            transition: all var(--transition);
+            font-family: var(--font-sans);
+            white-space: nowrap;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+        }
+        .pill-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-soft);
+        }
+        .pill-btn.active {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+        }
+        .pill-btn.exam-btn {
+            background: linear-gradient(135deg, #f59e0b, #f97316);
+            color: #fff;
+            border-color: transparent;
+            font-weight: 700;
+            box-shadow: 0 2px 10px rgba(245, 158, 11, 0.3);
+        }
+        .pill-btn.exam-btn:hover {
+            box-shadow: 0 4px 16px rgba(245, 158, 11, 0.45);
+            transform: translateY(-1px);
+        }
+        .pill-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 50px;
+            padding: 2px 8px;
+            font-size: 0.7rem;
+            margin-left: 4px;
+            font-weight: 700;
+            min-width: 20px;
+            text-align: center;
+        }
+        .pill-btn.active .pill-badge {
+            background: rgba(255, 255, 255, 0.35);
+        }
+        .pill-btn:not(.active) .pill-badge {
+            background: var(--border);
+            color: var(--text-secondary);
+        }
+
+        /* ──────────────── ALPHABET FILTER ──────────────── */
+        .alphabet-strip {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 4px;
+            margin-bottom: 1.2rem;
+        }
+        .alpha-chip {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            background: var(--surface);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.8rem;
+            transition: all var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-sans);
+        }
+        .alpha-chip:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-soft);
+        }
+        .alpha-chip.active {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+        .alpha-chip.alpha-all {
+            width: auto;
+            padding: 0 14px;
+            border-radius: 50px;
+            font-size: 0.78rem;
+        }
+
+        /* ──────────────── CARD GRID ──────────────── */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+            padding-bottom: 2rem;
+            min-height: 200px;
+        }
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem 1.2rem;
+            box-shadow: var(--shadow);
+            border: 2px solid transparent;
+            position: relative;
+            transition: all var(--transition);
+            cursor: default;
+            animation: cardFadeIn 0.35s ease-out;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+            border-color: var(--border);
+        }
+        .card.saved {
+            border-color: var(--card-saved-border);
+            box-shadow: var(--shadow-md), 0 0 0 6px var(--card-saved-glow);
+        }
+        .card.saved:hover {
+            box-shadow: var(--shadow-lg), 0 0 0 10px var(--card-saved-glow);
+        }
+        @keyframes cardFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(14px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .card-term-en {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            word-break: break-word;
+        }
+        .card-term-ar {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-align: right;
+            direction: rtl;
+            word-break: break-word;
+            font-family: var(--font-ar);
+        }
+        .card-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 4px;
+        }
+        .icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.15rem;
+            padding: 6px 8px;
+            border-radius: 50%;
+            transition: all var(--transition);
+            color: var(--text-muted);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            outline: none;
+        }
+        .icon-btn:hover {
+            background: var(--surface-hover);
+            color: var(--accent);
+        }
+        .icon-btn:focus-visible {
+            box-shadow: 0 0 0 3px var(--accent-subtle);
+        }
+        .icon-btn.speaker-playing {
+            color: var(--accent);
+            animation: speakerPulse 0.6s ease-in-out infinite;
+        }
+        @keyframes speakerPulse {
+            0%,
+            100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+        }
+        .star-btn {
+            font-size: 1.4rem;
+            padding: 4px 6px;
+            color: #cbd5e1;
+            transition: all var(--transition);
+        }
+        [data-theme="dark"] .star-btn {
+            color: #4b5563;
+        }
+        .star-btn.saved {
+            color: #f59e0b;
+            animation: starPop 0.4s ease-out;
+        }
+        @keyframes starPop {
+            0% {
+                transform: scale(0.6);
+            }
+            60% {
+                transform: scale(1.35);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* ──────────────── SKELETON LOADING ──────────────── */
+        .skeleton-card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem 1.2rem;
+            box-shadow: var(--shadow);
+            border: 2px solid transparent;
+        }
+        .skeleton-line {
+            height: 16px;
+            border-radius: 8px;
+            background: var(--skeleton);
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, var(--skeleton) 25%, var(--skeleton-shine) 50%, var(--skeleton) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        .skeleton-line.short {
+            width: 55%;
+        }
+        .skeleton-line.medium {
+            width: 75%;
+        }
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* ──────────────── EMPTY / LOADING STATES ──────────────── */
+        .state-message {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-muted);
+            grid-column: 1 / -1;
+        }
+        .state-message .emoji {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 12px;
+        }
+        .state-message h3 {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        /* ──────────────── MODAL ──────────────── */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: var(--overlay);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            backdrop-filter: blur(2px);
+        }
+        .modal-overlay.show {
+            display: flex;
+        }
+        .modal-dialog {
+            background: var(--surface);
+            border-radius: var(--radius-xl);
+            padding: 2rem 1.5rem 1.5rem;
+            max-width: 460px;
+            width: 100%;
+            text-align: center;
+            box-shadow: var(--shadow-xl);
+            animation: modalPop 0.3s ease-out;
+        }
+        @keyframes modalPop {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        .modal-dialog p {
+            font-size: 1.05rem;
+            margin-bottom: 1.4rem;
+            color: var(--text);
+            line-height: 1.5;
+        }
+        .modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 0.6rem 1.4rem;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            font-family: var(--font-sans);
+            transition: all var(--transition);
+            outline: none;
+        }
+        .btn:focus-visible {
+            box-shadow: 0 0 0 3px var(--accent-subtle);
+        }
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+        .btn-ghost {
+            background: var(--surface-hover);
+            color: var(--text);
+            border: 2px solid var(--border);
+        }
+        .btn-ghost:hover {
+            background: var(--border);
+        }
+
+        /* ──────────────── EXAM MODE ──────────────── */
+        .exam-container {
+            display: none;
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 1rem 0 3rem;
+        }
+        .exam-container.active {
+            display: block;
+        }
+        .exam-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 1.2rem;
+            background: var(--surface);
+            padding: 1rem 1.2rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            border: 2px solid var(--border);
+        }
+        .exam-progress-bar {
+            flex: 1;
+            min-width: 120px;
+            height: 8px;
+            background: var(--border);
+            border-radius: 50px;
+            overflow: hidden;
+        }
+        .exam-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #6366f1);
+            border-radius: 50px;
+            transition: width 0.4s ease;
+        }
+        .exam-info {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+        .exam-timer {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--accent);
+            white-space: nowrap;
+            font-variant-numeric: tabular-nums;
+            font-family: 'SF Mono', 'Consolas', 'Monaco', monospace;
+        }
+        .exam-timer.warning {
+            color: var(--warning);
+            animation: timerBlink 0.7s ease-in-out infinite;
+        }
+        .exam-timer.danger {
+            color: var(--danger);
+            animation: timerBlink 0.4s ease-in-out infinite;
+        }
+        @keyframes timerBlink {
+            50% {
+                opacity: 0.5;
+            }
+        }
+        .exam-question-card {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            border: 2px solid var(--border);
+            margin-bottom: 1rem;
+            animation: cardFadeIn 0.3s ease-out;
+        }
+        .exam-question-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: var(--text);
+            line-height: 1.5;
+            word-break: break-word;
+        }
+        .exam-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .exam-option-btn {
+            padding: 0.7rem 1rem;
+            border-radius: var(--radius);
+            border: 2px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            cursor: pointer;
+            font-size: 0.95rem;
+            text-align: left;
+            transition: all var(--transition);
+            font-family: var(--font-sans);
+            word-break: break-word;
+        }
+        .exam-option-btn:hover:not(:disabled) {
+            border-color: var(--accent);
+            background: var(--accent-soft);
+        }
+        .exam-option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.75;
+        }
+        .exam-option-btn.correct-choice {
+            background: var(--success-soft);
+            border-color: var(--success);
+            color: var(--success);
+            font-weight: 700;
+        }
+        .exam-option-btn.wrong-choice {
+            background: var(--danger-soft);
+            border-color: var(--danger);
+            color: var(--danger);
+            font-weight: 700;
+        }
+        .exam-score-dashboard {
+            text-align: center;
+            background: var(--surface);
+            padding: 2rem 1.5rem;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg);
+            border: 2px solid var(--border);
+            animation: cardFadeIn 0.5s ease-out;
+        }
+        .score-circle {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.6rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            border: 6px solid var(--accent);
+            color: var(--accent);
+            background: var(--accent-soft);
+        }
+        .score-circle.great {
+            border-color: var(--success);
+            color: var(--success);
+            background: var(--success-soft);
+        }
+        .score-circle.good {
+            border-color: #f59e0b;
+            color: #f59e0b;
+            background: var(--warning-soft);
+        }
+        .score-circle.low {
+            border-color: var(--danger);
+            color: var(--danger);
+            background: var(--danger-soft);
+        }
+        .score-details {
+            margin: 1rem 0;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        /* ──────────────── TOAST ──────────────── */
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            pointer-events: none;
+        }
+        .toast {
+            background: var(--toast-bg);
+            color: var(--toast-text);
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            box-shadow: var(--shadow-lg);
+            animation: toastIn 0.35s ease-out, toastOut 0.3s ease-in forwards;
+            animation-delay: 0s, 2.2s;
+            pointer-events: auto;
+            white-space: nowrap;
+            text-align: center;
+        }
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes toastOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+        }
+
+        /* ──────────────── SCROLL TO TOP ──────────────── */
+        .scroll-top-btn {
+            position: fixed;
+            bottom: 28px;
+            right: 24px;
+            z-index: 900;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            box-shadow: var(--shadow-lg);
+            transition: all var(--transition);
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(10px);
+        }
+        .scroll-top-btn.visible {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+        .scroll-top-btn:hover {
+            background: var(--accent-hover);
+            transform: translateY(-3px);
+        }
+
+        /* ──────────────── FOOTER ──────────────── */
+        .app-footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            border-top: 1px solid var(--border-light);
+            margin-top: 2rem;
+        }
+
+        /* ──────────────── RESPONSIVE ──────────────── */
+        @media (max-width: 768px) {
+            .app-logo {
+                font-size: 2rem;
+            }
+            .app-subtitle {
+                font-size: 0.9rem;
+            }
+            .card-grid {
+                grid-template-columns: 1fr;
+                gap: 0.7rem;
+            }
+            .controls-row {
+                gap: 6px;
+            }
+            .select-box {
+                padding: 0.35rem 0.8rem;
+                font-size: 0.78rem;
+            }
+            .select-box select {
+                font-size: 0.78rem;
+                min-width: 70px;
+            }
+            .pill-btn {
+                padding: 0.4rem 0.9rem;
+                font-size: 0.78rem;
+            }
+            .alpha-chip {
+                width: 28px;
+                height: 28px;
+                font-size: 0.7rem;
+            }
+            .exam-header {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+            .theme-toggle-wrap {
+                top: 10px;
+                right: 4px;
+            }
+            .search-input {
+                font-size: 0.9rem;
+                padding: 0.6rem 1rem 0.6rem 2.5rem;
+            }
+            .card {
+                padding: 1rem;
+            }
+            .card-term-en {
+                font-size: 1rem;
+            }
+            .card-term-ar {
+                font-size: 1.05rem;
+            }
+        }
+        @media (max-width: 400px) {
+            .app-logo {
+                font-size: 1.6rem;
+            }
+            .filter-pills {
+                gap: 5px;
+            }
+            .pill-btn {
+                padding: 0.35rem 0.7rem;
+                font-size: 0.72rem;
+            }
+            .alpha-chip {
+                width: 26px;
+                height: 26px;
+                font-size: 0.65rem;
+                border-radius: 6px;
+            }
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-wrapper">
+        <!-- HEADER -->
+        <header class="app-header">
+            <div class="theme-toggle-wrap">
+                <button class="theme-toggle" id="themeToggle" title="تبديل الوضع الليلي / النهاري" aria-label="تبديل السمة">
+                    <span class="theme-toggle-knob">
+                        <span class="theme-toggle-icon">☀️</span>
+                    </span>
+                </button>
+            </div>
+            <div class="header-top-row">
+                <span class="app-logo">📘 LegalLexicon</span>
+            </div>
+            <p class="app-subtitle">قاموس قانوني عربي — إنجليزي تفاعلي</p>
+        </header>
+
+        <!-- SEARCH -->
+        <div class="search-wrapper">
+            <div class="search-input-group">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" id="searchInput" placeholder="ابحث عن مصطلح بالعربية أو الإنجليزية..." autocomplete="off" />
+                <button class="search-clear" id="searchClear" title="مسح البحث">✕</button>
+            </div>
+        </div>
+        <p class="search-hint" id="searchHint">اضغط <kbd>/</kbd> للبحث السريع</p>
+
+        <!-- CONTROLS -->
+        <div class="controls-row">
+            <div class="select-box">
+                <label>📚 السنة</label>
+                <select id="yearSelect">
+                    <option value="1">سنة أولى</option>
+                    <option value="2">سنة ثانية</option>
+                    <option value="3">سنة ثالثة</option>
+                    <option value="4">سنة رابعة</option>
+                </select>
+            </div>
+            <div class="select-box">
+                <label>🔊 الصوت</label>
+                <select id="voiceSelect">
+                    <option value="">تحميل الأصوات...</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- ALPHABET FILTER -->
+        <div class="alphabet-strip" id="alphabetStrip"></div>
+
+        <!-- FILTER PILLS -->
+        <div class="filter-pills">
+            <button class="pill-btn exam-btn" id="startExamBtn">📝 بدء الامتحان</button>
+            <button class="pill-btn" data-filter="unsaved" id="filterUnsaved">غير المحفوظ<span class="pill-badge">0</span></button>
+            <button class="pill-btn" data-filter="saved" id="filterSaved">⭐ المحفوظ<span class="pill-badge">0</span></button>
+            <button class="pill-btn active" data-filter="all" id="filterAll">الكل<span class="pill-badge">0</span></button>
+        </div>
+
+        <!-- CARD GRID -->
+        <div class="card-grid" id="cardGrid"></div>
+
+        <!-- EXAM CONTAINER -->
+        <div class="exam-container" id="examContainer"></div>
+    </div>
+
+    <!-- MODAL -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-dialog">
+            <p id="modalMessage"></p>
+            <div class="modal-actions">
+                <button class="btn btn-primary" id="modalConfirm">تأكيد</button>
+                <button class="btn btn-ghost" id="modalCancel">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST CONTAINER -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- SCROLL TO TOP -->
+    <button class="scroll-top-btn" id="scrollTopBtn" title="العودة للأعلى">↑</button>
+
+    <!-- FOOTER -->
+    <footer class="app-footer">
+        © Mostafa Adel _ 01002789493 ❤️
+    </footer>
+
+    <script>
+        (function() {
+            // ─────────────────────────────────────
+            // DOM REFERENCES
+            // ─────────────────────────────────────
+            const cardGrid = document.getElementById('cardGrid');
+            const examContainer = document.getElementById('examContainer');
+            const searchInput = document.getElementById('searchInput');
+            const searchClear = document.getElementById('searchClear');
+            const searchHint = document.getElementById('searchHint');
+            const voiceSelect = document.getElementById('voiceSelect');
+            const yearSelect = document.getElementById('yearSelect');
+            const themeToggle = document.getElementById('themeToggle');
+            const themeToggleIcon = themeToggle.querySelector('.theme-toggle-icon');
+            const modalOverlay = document.getElementById('modalOverlay');
+            const modalMessage = document.getElementById('modalMessage');
+            const modalConfirm = document.getElementById('modalConfirm');
+            const modalCancel = document.getElementById('modalCancel');
+            const toastContainer = document.getElementById('toastContainer');
+            const scrollTopBtn = document.getElementById('scrollTopBtn');
+            const alphabetStrip = document.getElementById('alphabetStrip');
+            const filterAll = document.getElementById('filterAll');
+            const filterSaved = document.getElementById('filterSaved');
+            const filterUnsaved = document.getElementById('filterUnsaved');
+            const startExamBtn = document.getElementById('startExamBtn');
+            const filterPills = [filterAll, filterSaved, filterUnsaved];
+
+            // ─────────────────────────────────────
+            // STATE
+            // ─────────────────────────────────────
+            let legalTerms = [];
+            let savedTerms = [];
+            let currentFilter = 'all';
+            let activeAlphaFilter = null;
+            let voices = [];
+            let englishVoices = [];  // الأصوات الإنجليزية اللي في القائمة
+            let arabicVoice = null;  // الصوت العربي الثابت
+            let examState = null;
+            let examTimerInterval = null;
+            let examSecondsElapsed = 0;
+            let isLoading = false;
+            let currentYear = '1';
+            let debounceTimeout = null;
+            let modalResolve = null;
+
+            // ─────────────────────────────────────
+            // THEME LOGIC
+            // ─────────────────────────────────────
+            function getSystemTheme() {
+                return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+
+            function getSavedTheme() {
+                return localStorage.getItem('legallexicon-theme');
+            }
+
+            function applyTheme(theme) {
+                document.documentElement.setAttribute('data-theme', theme);
+                themeToggleIcon.textContent = theme === 'dark' ? '🌙' : '☀️';
+            }
+
+            function initTheme() {
+                const saved = getSavedTheme();
+                const theme = saved || getSystemTheme();
+                applyTheme(theme);
+            }
+
+            function toggleTheme() {
+                const current = document.documentElement.getAttribute('data-theme');
+                const next = current === 'dark' ? 'light' : 'dark';
+                applyTheme(next);
+                localStorage.setItem('legallexicon-theme', next);
+            }
+
+            themeToggle.addEventListener('click', toggleTheme);
+
+            // Listen for system theme changes (only if user hasn't manually set)
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+                if (!getSavedTheme()) {
+                    applyTheme(getSystemTheme());
+                }
+            });
+
+            // ─────────────────────────────────────
+            // STORAGE HELPERS
+            // ─────────────────────────────────────
+            function getStorageKey() {
+                return `legallexicon-saved-year-${currentYear}`;
+            }
+
+            function loadSavedTerms() {
+                const raw = localStorage.getItem(getStorageKey());
+                savedTerms = raw ? JSON.parse(raw) : [];
+            }
+
+            function persistSavedTerms() {
+                localStorage.setItem(getStorageKey(), JSON.stringify(savedTerms));
+            }
+
+            function isTermSaved(en) {
+                return savedTerms.includes(en);
+            }
+
+            function toggleSaveTerm(en) {
+                if (isTermSaved(en)) {
+                    savedTerms = savedTerms.filter(t => t !== en);
+                    showToast('🗑️ تم إلغاء الحفظ');
+                } else {
+                    savedTerms.push(en);
+                    showToast('⭐ تم حفظ المصطلح');
+                }
+                persistSavedTerms();
+            }
+
+            // ─────────────────────────────────────
+            // TOAST
+            // ─────────────────────────────────────
+            function showToast(message) {
+                const toast = document.createElement('div');
+                toast.className = 'toast';
+                toast.textContent = message;
+                toastContainer.appendChild(toast);
+                const totalDuration = 2500;
+                setTimeout(() => {
+                    if (toast.parentNode) toast.remove();
+                }, totalDuration);
+            }
+
+            // ─────────────────────────────────────
+            // MODAL (promise-based)
+            // ─────────────────────────────────────
+            function showModal(message) {
+                return new Promise((resolve) => {
+                    modalMessage.textContent = message;
+                    modalOverlay.classList.add('show');
+                    modalResolve = resolve;
+                });
+            }
+
+            function hideModal(confirmed) {
+                modalOverlay.classList.remove('show');
+                if (modalResolve) {
+                    modalResolve(confirmed);
+                    modalResolve = null;
+                }
+            }
+
+            modalConfirm.addEventListener('click', () => hideModal(true));
+            modalCancel.addEventListener('click', () => hideModal(false));
+            modalOverlay.addEventListener('click', (e) => {
+                if (e.target === modalOverlay) hideModal(false);
+            });
+
+            // ─────────────────────────────────────
+            // VOICE LOGIC
+            // ─────────────────────────────────────
+
+            function populateVoices() {
+              voices = window.speechSynthesis.getVoices();
+              
+              // فلترة الأصوات الإنجليزية فقط
+              const englishVoices = voices.filter(v => v.lang.toLowerCase().startsWith('en'));
+              // تخزين أول صوت عربي متاح (ثابت تلقائي)
+              arabicVoice = voices.find(v => v.lang.toLowerCase().startsWith('ar')) || null;
+              
+              const savedVoiceURI = localStorage.getItem('legallexicon-voice-uri');
+              voiceSelect.innerHTML = '<option value="">اختر صوتاً</option>';
+              let selectedIndex = '';
+              
+              englishVoices.forEach((voice, index) => {
+                  const option = document.createElement('option');
+                  // هنا نخزن الإندكس الأصلي من قائمة englishVoices عشان نستخدمه بعد كده
+                  option.value = index;
+                  option.textContent = `${voice.name} (${voice.lang})`;
+                  voiceSelect.appendChild(option);
+                  if (voice.voiceURI === savedVoiceURI) {
+                      selectedIndex = String(index);
+                  }
+              });
+              
+              if (selectedIndex !== '') {
+                  voiceSelect.value = selectedIndex;
+              } else if (englishVoices.length > 0) {
+                  voiceSelect.value = '0';
+              }
+              
+              // تحديث دالة getSelectedVoice لتشتغل على englishVoices بدل voices كلها
+              // (هنضطر نعيد تعريفها أو نخليها تستعمل englishVoices)
+              // الحل الأفضل: نخزن englishVoices في متغير عام كمان
+              window.englishVoices = englishVoices;
+          }
+
+            function getSelectedVoice() {
+                const idx = voiceSelect.value;
+                if (idx === '' || !window.englishVoices || !window.englishVoices[idx]) return null;
+                return window.englishVoices[idx];
+            }
+
+            function speakText(text, lang = 'en') {
+              window.speechSynthesis.cancel();
+              const utterance = new SpeechSynthesisUtterance(text);
+              
+              if (lang === 'ar') {
+                  // استخدام الصوت العربي الثابت لو موجود
+                  if (arabicVoice) {
+                      utterance.voice = arabicVoice;
+                      utterance.lang = arabicVoice.lang;
+                  } else {
+                      // لو مفيش صوت عربي، ندي اللغات العربية الافتراضية
+                      utterance.lang = 'ar-SA';  // أو 'ar' بس
+                  }
+              } else {
+                  // الصوت الإنجليزي المختار من القائمة
+                  const voice = getSelectedVoice();
+                  if (voice) {
+                      utterance.voice = voice;
+                      utterance.lang = voice.lang;
+                  }
+              }
+              
+              window.speechSynthesis.speak(utterance);
+          }
+
+            window.speechSynthesis.onvoiceschanged = populateVoices;
+            populateVoices();
+
+            voiceSelect.addEventListener('change', () => {
+                const idx = voiceSelect.value;
+                if (idx !== '' && window.englishVoices && window.englishVoices[idx]) {
+                    localStorage.setItem('legallexicon-voice-uri', window.englishVoices[idx].voiceURI);
+                }
+            });
+
+            // ─────────────────────────────────────
+            // DATA LOADING
+            // ─────────────────────────────────────
+            async function loadTerms(year) {
+                isLoading = true;
+                renderSkeletons();
+                try {
+                    const response = await fetch(`legalTerms_${year}.json`);
+                    if (!response.ok) {
+                        legalTerms = [];
+                        renderEmptyState('⚠️ لا توجد بيانات', 'هذه السنة لا تحتوي على مصطلحات حالياً');
+                        return;
+                    }
+                    const data = await response.json();
+                    legalTerms = Array.isArray(data) ? data : [];
+                    if (legalTerms.length === 0) {
+                        renderEmptyState('📭 فارغة', 'لا توجد مصطلحات في هذه السنة');
+                    }
+                } catch (error) {
+                    console.error('Error loading terms:', error);
+                    legalTerms = [];
+                    renderEmptyState('⚠️ خطأ في التحميل', 'تعذر تحميل البيانات. تحقق من اتصالك أو من وجود الملف.');
+                } finally {
+                    isLoading = false;
+                    loadSavedTerms();
+                    renderAll();
+                }
+            }
+
+            // ─────────────────────────────────────
+            // RENDER SKELETONS
+            // ─────────────────────────────────────
+            function renderSkeletons() {
+                cardGrid.innerHTML = '';
+                examContainer.classList.remove('active');
+                examContainer.innerHTML = '';
+                cardGrid.style.display = 'grid';
+                for (let i = 0; i < 8; i++) {
+                    const skel = document.createElement('div');
+                    skel.className = 'skeleton-card';
+                    skel.innerHTML = `
+                <div class="skeleton-line medium"></div>
+                <div class="skeleton-line short"></div>
+                <div class="skeleton-line" style="width:40%"></div>
+              `;
+                    cardGrid.appendChild(skel);
+                }
+            }
+
+            function renderEmptyState(emoji, message) {
+                cardGrid.innerHTML = `
+              <div class="state-message">
+                <span class="emoji">${emoji}</span>
+                <h3>${message}</h3>
+              </div>`;
+            }
+
+            // ─────────────────────────────────────
+            // FILTERING LOGIC
+            // ─────────────────────────────────────
+            function getFilteredTerms() {
+                const search = searchInput.value.toLowerCase().trim();
+                let filtered = [...legalTerms];
+
+                // Alphabet filter
+                if (activeAlphaFilter !== null) {
+                    const letter = activeAlphaFilter.toLowerCase();
+                    filtered = filtered.filter(t => t.en.toLowerCase().startsWith(letter));
+                }
+
+                // Search filter (partial match in both en and ar)
+                if (search) {
+                    filtered = filtered.filter(t =>
+                        t.en.toLowerCase().includes(search) || t.ar.includes(search)
+                    );
+                }
+
+                // Saved/unsaved filter
+                if (currentFilter === 'saved') {
+                    filtered = filtered.filter(t => isTermSaved(t.en));
+                } else if (currentFilter === 'unsaved') {
+                    filtered = filtered.filter(t => !isTermSaved(t.en));
+                }
+
+                return filtered;
+            }
+
+            // ─────────────────────────────────────
+            // RENDER ALL
+            // ─────────────────────────────────────
+            function renderAll() {
+                updateAlphabetStrip();
+                updatePillCounts();
+                renderCards();
+            }
+
+            function updateAlphabetStrip() {
+                // Collect unique starting letters from English terms
+                const letters = new Set();
+                legalTerms.forEach(t => {
+                    const first = t.en.trim().charAt(0).toUpperCase();
+                    if (/[A-Z]/.test(first)) letters.add(first);
+                });
+                const sorted = [...letters].sort();
+                alphabetStrip.innerHTML = '';
+
+                // "All" chip
+                const allChip = document.createElement('button');
+                allChip.className = `alpha-chip alpha-all ${activeAlphaFilter === null ? 'active' : ''}`;
+                allChip.textContent = 'الكل';
+                allChip.addEventListener('click', () => {
+                    activeAlphaFilter = null;
+                    renderAll();
+                });
+                alphabetStrip.appendChild(allChip);
+
+                sorted.forEach(letter => {
+                    const chip = document.createElement('button');
+                    chip.className = `alpha-chip ${activeAlphaFilter === letter ? 'active' : ''}`;
+                    chip.textContent = letter;
+                    chip.addEventListener('click', () => {
+                        activeAlphaFilter = activeAlphaFilter === letter ? null : letter;
+                        renderAll();
+                    });
+                    alphabetStrip.appendChild(chip);
+                });
+            }
+
+            function updatePillCounts() {
+                const total = legalTerms.length;
+                const savedCount = savedTerms.length;
+                const unsavedCount = total - savedCount;
+                filterAll.querySelector('.pill-badge').textContent = total;
+                filterSaved.querySelector('.pill-badge').textContent = savedCount;
+                filterUnsaved.querySelector('.pill-badge').textContent = unsavedCount;
+            }
+
+            function renderCards() {
+                if (isLoading) return;
+                cardGrid.style.display = 'grid';
+                examContainer.classList.remove('active');
+                examContainer.innerHTML = '';
+
+                const filtered = getFilteredTerms();
+
+                if (filtered.length === 0 && legalTerms.length === 0) {
+                    renderEmptyState('📭', 'لا توجد مصطلحات');
+                    return;
+                }
+                if (filtered.length === 0) {
+                    cardGrid.innerHTML = `
+                <div class="state-message">
+                  <span class="emoji">🔍</span>
+                  <h3>لا توجد نتائج مطابقة</h3>
+                  <p style="color:var(--text-muted);font-size:0.9rem;">جرّب تغيير البحث أو الفلتر</p>
+                </div>`;
+                    return;
+                }
+
+                cardGrid.innerHTML = '';
+                filtered.forEach((term, index) => {
+                    const saved = isTermSaved(term.en);
+                    const card = document.createElement('div');
+                    card.className = `card ${saved ? 'saved' : ''}`;
+                    card.style.animationDelay = `${Math.min(index * 0.03, 0.5)}s`;
+                    card.innerHTML = `
+                <div class="card-term-en">
+                  ${escapeHTML(term.en)}
+                  <button class="icon-btn speaker-btn-en" title="استمع للنطق الإنجليزي" data-text="${escapeHTML(term.en)}">🔊</button>
+                </div>
+                <div class="card-term-ar">
+                  ${escapeHTML(term.ar)}
+                  <button class="icon-btn speaker-btn-ar" title="استمع للنطق العربي" data-text="${escapeHTML(term.ar)}">🔊</button>
+                </div>
+                <div class="card-actions">
+                  <button class="icon-btn star-btn ${saved ? 'saved' : ''}" title="${saved ? 'إلغاء الحفظ' : 'حفظ المصطلح'}" data-en="${escapeHTML(term.en)}">
+                    ${saved ? '★' : '☆'}
+                  </button>
+                </div>
+              `;
+                    cardGrid.appendChild(card);
+                });
+
+                // Attach event listeners via delegation on cardGrid
+                cardGrid.querySelectorAll('.speaker-btn-en, .speaker-btn-ar').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const text = this.getAttribute('data-text');
+                        const decoded = document.createElement('textarea');
+                        decoded.innerHTML = text;
+                        const lang = this.classList.contains('speaker-btn-en') ? 'en' : 'ar';
+                        speakText(decoded.value, lang);
+                        this.classList.add('speaker-playing');
+                        setTimeout(() => this.classList.remove('speaker-playing'), 800);
+                    });
+                });
+
+                cardGrid.querySelectorAll('.star-btn').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const enAttr = this.getAttribute('data-en');
+                        const decoded = document.createElement('textarea');
+                        decoded.innerHTML = enAttr;
+                        const enValue = decoded.value;
+                        toggleSaveTerm(enValue);
+                        // Update just this card's star
+                        const saved = isTermSaved(enValue);
+                        this.classList.toggle('saved', saved);
+                        this.textContent = saved ? '★' : '☆';
+                        this.title = saved ? 'إلغاء الحفظ' : 'حفظ المصطلح';
+                        // Update parent card border
+                        const card = this.closest('.card');
+                        if (card) card.classList.toggle('saved', saved);
+                        updatePillCounts();
+                    });
+                });
+            }
+
+            function escapeHTML(str) {
+                const div = document.createElement('div');
+                div.textContent = str;
+                return div.innerHTML;
+            }
+
+            // ─────────────────────────────────────
+            // DEBOUNCED SEARCH
+            // ─────────────────────────────────────
+            function debouncedRender() {
+                clearTimeout(debounceTimeout);
+                debounceTimeout = setTimeout(() => {
+                    renderCards();
+                    updateSearchHint();
+                }, 200);
+            }
+
+            function updateSearchHint() {
+                const search = searchInput.value.trim();
+                searchClear.classList.toggle('visible', search.length > 0);
+                searchHint.style.opacity = search.length > 0 ? '0.4' : '1';
+            }
+
+            searchInput.addEventListener('input', () => {
+                debouncedRender();
+                updateSearchHint();
+            });
+
+            searchClear.addEventListener('click', () => {
+                searchInput.value = '';
+                searchClear.classList.remove('visible');
+                searchHint.style.opacity = '1';
+                activeAlphaFilter = null;
+                renderAll();
+                searchInput.focus();
+            });
+
+            // Keyboard shortcut: "/" to focus search
+            document.addEventListener('keydown', (e) => {
+                if (e.key === '/' && document.activeElement !== searchInput && !examState) {
+                    e.preventDefault();
+                    searchInput.focus();
+                    searchInput.select();
+                }
+                if (e.key === 'Escape' && document.activeElement === searchInput) {
+                    searchInput.value = '';
+                    searchInput.blur();
+                    searchClear.classList.remove('visible');
+                    searchHint.style.opacity = '1';
+                    activeAlphaFilter = null;
+                    renderAll();
+                }
+            });
+
+            // ─────────────────────────────────────
+            // FILTER PILLS
+            // ─────────────────────────────────────
+            function setFilter(filter) {
+                currentFilter = filter;
+                filterPills.forEach(pill => pill.classList.remove('active'));
+                const activePill = document.getElementById(
+                    filter === 'all' ? 'filterAll' : filter === 'saved' ? 'filterSaved' : 'filterUnsaved'
+                );
+                if (activePill) activePill.classList.add('active');
+                renderCards();
+            }
+
+            filterAll.addEventListener('click', () => setFilter('all'));
+            filterSaved.addEventListener('click', () => setFilter('saved'));
+            filterUnsaved.addEventListener('click', () => setFilter('unsaved'));
+
+            // ─────────────────────────────────────
+            // EXAM LOGIC
+            // ─────────────────────────────────────
+            function shuffleArray(arr) {
+                const a = [...arr];
+                for (let i = a.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [a[i], a[j]] = [a[j], a[i]];
+                }
+                return a;
+            }
+
+            function generateExamQuestions() {
+                const savedTermObjs = legalTerms.filter(t => isTermSaved(t.en));
+                const questionCount = Math.min(savedTermObjs.length, 50);
+                const usedENs = new Set();
+                const questions = [];
+
+                const availablePool = [...savedTermObjs];
+                while (questions.length < questionCount && availablePool.length > 0) {
+                    const available = availablePool.filter(t => !usedENs.has(t.en));
+                    if (!available.length) break;
+                    const term = available[Math.floor(Math.random() * available.length)];
+                    usedENs.add(term.en);
+                    const isArabicQ = Math.random() < 0.5;
+                    const questionText = isArabicQ ? term.ar : term.en;
+                    const correctAnswer = isArabicQ ? term.en : term.ar;
+                    const incorrectOptions = shuffleArray(legalTerms.filter(t => t.en !== term.en))
+                        .slice(0, 3)
+                        .map(t => isArabicQ ? t.en : t.ar);
+                    const options = shuffleArray([correctAnswer, ...incorrectOptions]);
+                    questions.push({
+                        question: questionText,
+                        correctAnswer,
+                        options,
+                        termEN: term.en,
+                    });
+                }
+                return shuffleArray(questions);
+            }
+
+            async function startExam() {
+                if (savedTerms.length < 5) {
+                    await showModal('يجب حفظ 5 مصطلحات على الأقل لبدء الامتحان. احفظ بعض المصطلحات أولاً ⭐');
+                    return;
+                }
+                const confirmed = await showModal(
+                    `هل تريد بدء الامتحان؟ عدد الأسئلة: ${Math.min(savedTerms.length, 50)} سؤال. اضغط تأكيد للمتابعة.`
+                    );
+                if (!confirmed) return;
+
+                const questions = generateExamQuestions();
+                examState = {
+                    questions,
+                    currentIndex: 0,
+                    correctCount: 0,
+                    answers: [],
+                };
+                examSecondsElapsed = 0;
+                cardGrid.style.display = 'none';
+                examContainer.classList.add('active');
+                clearInterval(examTimerInterval);
+                examTimerInterval = setInterval(() => {
+                    examSecondsElapsed++;
+                    updateExamTimerDisplay();
+                }, 1000);
+                renderExamQuestion();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            function updateExamTimerDisplay() {
+                const timerEl = document.getElementById('examTimerDisplay');
+                if (!timerEl) return;
+                const mins = Math.floor(examSecondsElapsed / 60);
+                const secs = examSecondsElapsed % 60;
+                timerEl.textContent = `⏱ ${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+                timerEl.classList.remove('warning', 'danger');
+                if (examSecondsElapsed > 180) timerEl.classList.add('danger');
+                else if (examSecondsElapsed > 120) timerEl.classList.add('warning');
+            }
+
+            function renderExamQuestion() {
+                if (!examState) return;
+                const { questions, currentIndex, correctCount } = examState;
+                examContainer.innerHTML = '';
+
+                if (currentIndex >= questions.length) {
+                    renderExamResults();
+                    return;
+                }
+
+                const q = questions[currentIndex];
+                const progressPct = Math.round((currentIndex / questions.length) * 100);
+
+                examContainer.innerHTML = `
+              <div class="exam-header">
+                <span class="exam-info">سؤال ${currentIndex + 1} / ${questions.length}</span>
+                <div class="exam-progress-bar">
+                  <div class="exam-progress-fill" style="width:${progressPct}%"></div>
+                </div>
+                <span class="exam-timer" id="examTimerDisplay">⏱ 00:00</span>
+                <span class="exam-info">✅ ${correctCount}</span>
+              </div>
+              <div class="exam-question-card">
+                <h3>${escapeHTML(q.question)}</h3>
+                <div class="exam-options" id="examOptions"></div>
+              </div>
+            `;
+
+                const optionsContainer = document.getElementById('examOptions');
+                q.options.forEach((option) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'exam-option-btn';
+                    btn.textContent = option;
+                    btn.addEventListener('click', () => handleExamAnswer(option, q.correctAnswer));
+                    optionsContainer.appendChild(btn);
+                });
+                updateExamTimerDisplay();
+            }
+
+            function handleExamAnswer(selected, correct) {
+                if (!examState) return;
+                const allBtns = document.querySelectorAll('.exam-option-btn');
+                allBtns.forEach(b => b.disabled = true);
+
+                const isCorrect = selected === correct;
+                if (isCorrect) {
+                    examState.correctCount++;
+                    // Highlight correct
+                    allBtns.forEach(b => {
+                        if (b.textContent === correct) b.classList.add('correct-choice');
+                    });
+                } else {
+                    // Highlight wrong and correct
+                    allBtns.forEach(b => {
+                        if (b.textContent === selected) b.classList.add('wrong-choice');
+                        if (b.textContent === correct) b.classList.add('correct-choice');
+                    });
+                }
+
+                examState.answers.push({
+                    question: examState.questions[examState.currentIndex].question,
+                    selected,
+                    correct,
+                    isCorrect,
+                });
+
+                // Update header counter
+                const infoEl = examContainer.querySelector('.exam-info:last-child');
+                if (infoEl) infoEl.textContent = `✅ ${examState.correctCount}`;
+
+                setTimeout(() => {
+                    examState.currentIndex++;
+                    renderExamQuestion();
+                }, 900);
+            }
+
+            function renderExamResults() {
+                clearInterval(examTimerInterval);
+                const { questions, correctCount } = examState;
+                const total = questions.length;
+                const percentage = Math.round((correctCount / total) * 100);
+                const mins = Math.floor(examSecondsElapsed / 60);
+                const secs = examSecondsElapsed % 60;
+                const timeStr = `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+
+                let circleClass = 'low';
+                let emoji = '😔';
+                let message = 'حاول مرة أخرى، ستتحسن!';
+                if (percentage >= 90) { circleClass = 'great';
+                    emoji = '🏆';
+                    message = 'أداء ممتاز! أنت محترف!'; } else if (percentage >= 70) { circleClass = 'good';
+                    emoji = '👍';
+                    message = 'أداء جيد، واصل التقدم!'; } else if (percentage >= 50) { circleClass = 'good';
+                    emoji = '📖';
+                    message = 'تحتاج للمزيد من المراجعة.'; }
+
+                examContainer.innerHTML = `
+              <div class="exam-score-dashboard">
+                <div class="score-circle ${circleClass}">${percentage}%</div>
+                <h2>${emoji} نتيجة الامتحان</h2>
+                <div class="score-details">
+                  <p>الإجابات الصحيحة: <strong>${correctCount}</strong> / ${total}</p>
+                  <p>النسبة: <strong>${percentage}%</strong></p>
+                  <p>الوقت المستغرق: <strong>${timeStr}</strong></p>
+                </div>
+                <p style="color:var(--text-secondary);margin-bottom:1.2rem;">${message}</p>
+                <div class="modal-actions">
+                  <button class="btn btn-primary" id="examRetryBtn">🔁 إعادة الامتحان</button>
+                  <button class="btn btn-ghost" id="examBackBtn">📚 العودة للقاموس</button>
+                </div>
+              </div>
+            `;
+
+                document.getElementById('examRetryBtn').addEventListener('click', () => {
+                    examState = null;
+                    clearInterval(examTimerInterval);
+                    startExam();
+                });
+                document.getElementById('examBackBtn').addEventListener('click', exitExam);
+            }
+
+            function exitExam() {
+                clearInterval(examTimerInterval);
+                examState = null;
+                examContainer.classList.remove('active');
+                examContainer.innerHTML = '';
+                cardGrid.style.display = 'grid';
+                renderCards();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            startExamBtn.addEventListener('click', () => {
+                if (examState) {
+                    exitExam();
+                }
+                startExam();
+            });
+
+            // ─────────────────────────────────────
+            // YEAR SELECTOR
+            // ─────────────────────────────────────
+            const savedYear = localStorage.getItem('legallexicon-year');
+            if (savedYear && ['1', '2', '3', '4'].includes(savedYear)) {
+                yearSelect.value = savedYear;
+                currentYear = savedYear;
+            }
+
+            yearSelect.addEventListener('change', () => {
+                currentYear = yearSelect.value;
+                localStorage.setItem('legallexicon-year', currentYear);
+                activeAlphaFilter = null;
+                searchInput.value = '';
+                searchClear.classList.remove('visible');
+                searchHint.style.opacity = '1';
+                clearInterval(examTimerInterval);
+                examState = null;
+                examContainer.classList.remove('active');
+                examContainer.innerHTML = '';
+                cardGrid.style.display = 'grid';
+                currentFilter = 'all';
+                filterPills.forEach(p => p.classList.remove('active'));
+                filterAll.classList.add('active');
+                loadSavedTerms();
+                loadTerms(currentYear);
+            });
+
+            // ─────────────────────────────────────
+            // SCROLL TO TOP
+            // ─────────────────────────────────────
+            function handleScroll() {
+                const scrolled = window.scrollY > 400;
+                scrollTopBtn.classList.toggle('visible', scrolled);
+            }
+            window.addEventListener('scroll', handleScroll, { passive: true });
+            scrollTopBtn.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            // ─────────────────────────────────────
+            // RIGHT-CLICK & DEVTOOLS PREVENTION
+            // ─────────────────────────────────────
+            document.addEventListener('contextmenu', e => e.preventDefault());
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'F12') { e.preventDefault();
+                    return false; }
+                if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) { e.preventDefault();
+                    return false; }
+                if (e.ctrlKey && e.key === 'u') { e.preventDefault();
+                    return false; }
+            });
+
+            // ─────────────────────────────────────
+            // INIT
+            // ─────────────────────────────────────
+            function init() {
+                initTheme();
+                currentYear = yearSelect.value;
+                loadSavedTerms();
+                loadTerms(currentYear);
+                updateSearchHint();
+            }
+
+            init();
+        })();
+    </script>
+</body>
+</html>
