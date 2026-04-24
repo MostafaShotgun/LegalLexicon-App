@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glossary to JSON - معجم المصطلحات</title>
+    <style>
+        :root {
+            --bg: #06060c;
+            --surface: #0e0e1a;
+            --surface2: #131325;
+            --surface3: #1a1a30;
+            --gold: #d4a853;
+            --gold-light: #e8c97a;
+            --gold-dark: #b0893c;
+            --text: #e0dcd0;
+            --text-dim: #9a9588;
+            --text-bright: #f5f0e5;
+            --border: rgba(212, 168, 83, 0.2);
+            --border-subtle: rgba(255, 255, 255, 0.06);
+            --danger: #e0556a;
+            --success: #4caf84;
+            --info: #6da9d6;
+            --json-bg: #0c0e18;
+            --json-key: #7ec8e3;
+            --json-string: #c9a84c;
+            --json-bracket: #8b8fa3;
+            --json-number: #e8a87c;
+            --radius: 16px;
+            --radius-sm: 10px;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-ar: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+            --font-en: 'SF Mono', 'Fira Code', 'Consolas', 'Monaco', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg);
+            font-family: var(--font-ar);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        /* ── Animated background orbs ── */
+        .bg-orbs {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .bg-orbs .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.25;
+            animation: floatOrb 18s infinite ease-in-out;
+        }
+        .bg-orbs .orb:nth-child(1) {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(180, 130, 60, 0.5), transparent 70%);
+            top: -15%;
+            left: -10%;
+            animation-delay: 0s;
+        }
+        .bg-orbs .orb:nth-child(2) {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(100, 140, 200, 0.4), transparent 70%);
+            bottom: -12%;
+            right: -8%;
+            animation-delay: -6s;
+        }
+        .bg-orbs .orb:nth-child(3) {
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, rgba(180, 150, 90, 0.35), transparent 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: -11s;
+        }
+        @keyframes floatOrb {
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+            25% {
+                transform: translate(40px, -50px) scale(1.15);
+            }
+            50% {
+                transform: translate(-20px, 30px) scale(0.9);
+            }
+            75% {
+                transform: translate(-45px, -25px) scale(1.1);
+            }
+        }
+
+        /* ── Grid pattern overlay ── */
+        .grid-overlay {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.03;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.5) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.5) 1px, transparent 1px);
+            background-size: 40px 40px;
+            mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+        }
+
+        /* ── Main container ── */
+        .app-container {
+            position: relative;
+            z-index: 1;
+            width: 95%;
+            max-width: 1500px;
+            margin: 24px auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* ── Header ── */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            padding: 20px 28px;
+            background: var(--surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: var(--radius);
+            padding: 1px;
+            background: linear-gradient(135deg, var(--gold-dark), transparent 40%, transparent 70%, var(--gold-dark));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: #1a1a10;
+            flex-shrink: 0;
+            box-shadow: 0 8px 30px rgba(180, 140, 60, 0.3);
+            animation: logoPulse 3s ease-in-out infinite;
+        }
+        @keyframes logoPulse {
+            0%,
+            100% {
+                box-shadow: 0 8px 30px rgba(180, 140, 60, 0.3);
+            }
+            50% {
+                box-shadow: 0 8px 50px rgba(200, 160, 70, 0.5);
+            }
+        }
+        .header-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-bright);
+            letter-spacing: -0.3px;
+        }
+        .header-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            margin-top: 2px;
+        }
+        .stats-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            padding: 10px 18px;
+            font-size: 0.9rem;
+            color: var(--gold-light);
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+        .stats-badge .count-num {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--text-bright);
+            line-height: 1;
+        }
+        .stats-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: dotBlink 2s ease-in-out infinite;
+        }
+        @keyframes dotBlink {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        /* ── Main layout ── */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.1fr 1.3fr;
+            gap: 18px;
+            align-items: start;
+        }
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .main-grid .json-panel {
+                grid-column: 1 / -1;
+            }
+        }
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .stats-badge {
+                align-self: flex-end;
+            }
+        }
+
+        /* ── Panel card ── */
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius);
+            padding: 20px;
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            position: relative;
+            transition: var(--transition);
+            min-height: 380px;
+        }
+        .panel:hover {
+            border-color: rgba(212, 168, 83, 0.3);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(212, 168, 83, 0.08) inset;
+        }
+        .panel-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .panel-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        .panel-icon.input {
+            background: rgba(120, 150, 200, 0.2);
+            color: #8ab4d8;
+        }
+        .panel-icon.table {
+            background: rgba(160, 200, 140, 0.2);
+            color: #8cc87a;
+        }
+        .panel-icon.json {
+            background: rgba(200, 160, 80, 0.2);
+            color: #d4a853;
+        }
+        .panel-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-bright);
+            letter-spacing: -0.2px;
+        }
+        .panel-badge {
+            font-size: 0.7rem;
+            background: var(--surface3);
+            padding: 4px 10px;
+            border-radius: 20px;
+            color: var(--text-dim);
+            margin-right: auto;
+        }
+
+        /* ── Textarea ── */
+        .input-textarea {
+            width: 100%;
+            flex: 1;
+            min-height: 260px;
+            background: var(--surface2);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            color: var(--text-bright);
+            padding: 16px;
+            font-family: var(--font-en);
+            font-size: 0.85rem;
+            line-height: 1.7;
+            resize: vertical;
+            direction: ltr;
+            transition: var(--transition);
+            tab-size: 4;
+        }
+        .input-textarea:focus {
+            outline: none;
+            border-color: var(--gold-dark);
+            box-shadow: 0 0 0 4px rgba(180, 140, 60, 0.08);
+            background: #16162a;
+        }
+        .input-textarea::placeholder {
+            color: #4a4558;
+            font-style: italic;
+        }
+
+        /* ── Buttons ── */
+        .btn {
+            padding: 10px 18px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-family: var(--font-ar);
+            white-space: nowrap;
+            letter-spacing: -0.1px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--gold-dark), #c49a3c);
+            color: #1a1408;
+            box-shadow: 0 6px 24px rgba(180, 130, 40, 0.3);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 32px rgba(200, 150, 50, 0.4);
+            filter: brightness(1.1);
+        }
+        .btn-primary:active {
+            transform: scale(0.96);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid var(--border);
+            color: var(--gold-light);
+        }
+        .btn-outline:hover {
+            background: rgba(212, 168, 83, 0.08);
+            border-color: var(--gold);
+        }
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            border-radius: 30px;
+        }
+        .btn-danger-sm {
+            background: transparent;
+            border: 1px solid rgba(220, 80, 100, 0.4);
+            color: #e88a95;
+            padding: 5px 9px;
+            font-size: 0.7rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .btn-danger-sm:hover {
+            background: rgba(220, 80, 100, 0.15);
+            border-color: #e0556a;
+        }
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid var(--border-subtle);
+            background: var(--surface2);
+            color: var(--text-dim);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            font-size: 14px;
+        }
+        .btn-icon:hover {
+            border-color: var(--gold);
+            color: var(--gold-light);
+            background: var(--surface3);
+        }
+        .btn-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* ── Terms table ── */
+        .terms-scroll {
+            flex: 1;
+            overflow-y: auto;
+            max-height: 350px;
+            border-radius: var(--radius-sm);
+            background: var(--surface2);
+            border: 1px solid var(--border-subtle);
+            scrollbar-width: thin;
+            scrollbar-color: #2a2a3a transparent;
+        }
+        .terms-scroll::-webkit-scrollbar {
+            width: 5px;
+        }
+        .terms-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .terms-scroll::-webkit-scrollbar-thumb {
+            background: #2a2a3a;
+            border-radius: 20px;
+        }
+        .terms-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+        .terms-table th {
+            background: var(--surface3);
+            padding: 10px 12px;
+            text-align: right;
+            font-weight: 700;
+            color: var(--gold-light);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            border-bottom: 2px solid var(--border);
+        }
+        .terms-table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--border-subtle);
+            vertical-align: middle;
+        }
+        .terms-table .en-cell {
+            direction: ltr;
+            text-align: left;
+            font-family: var(--font-en);
+            color: #c8d6e5;
+            font-size: 0.8rem;
+        }
+        .terms-table .ar-cell {
+            direction: rtl;
+            text-align: right;
+            color: #e8dcc8;
+            font-weight: 500;
+        }
+        .terms-table tbody tr {
+            transition: var(--transition);
+        }
+        .terms-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        .terms-table .row-num {
+            color: var(--text-dim);
+            font-size: 0.7rem;
+            text-align: center;
+            width: 30px;
+            opacity: 0.6;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-dim);
+            font-size: 0.85rem;
+        }
+        .empty-state .empty-icon {
+            font-size: 40px;
+            display: block;
+            margin-bottom: 10px;
+            opacity: 0.5;
+        }
+
+        /* ── JSON Preview ── */
+        .json-preview-wrap {
+            flex: 1;
+            background: var(--json-bg);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-subtle);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        .json-preview-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            background: var(--surface3);
+            border-bottom: 1px solid var(--border-subtle);
+            font-size: 0.7rem;
+            color: var(--text-dim);
+        }
+        .json-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        .json-dot.red {
+            background: #e0556a;
+        }
+        .json-dot.yellow {
+            background: #d4a853;
+        }
+        .json-dot.green {
+            background: #4caf84;
+        }
+        .json-code-block {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            font-family: var(--font-en);
+            font-size: 0.8rem;
+            line-height: 1.7;
+            direction: ltr;
+            text-align: left;
+            white-space: pre-wrap;
+            word-break: break-word;
+            color: #c0c8d4;
+            scrollbar-width: thin;
+            scrollbar-color: #2a2a3a transparent;
+            margin: 0;
+            position: relative;
+        }
+        .json-code-block::-webkit-scrollbar {
+            width: 5px;
+        }
+        .json-code-block::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .json-code-block::-webkit-scrollbar-thumb {
+            background: #2a2a3a;
+            border-radius: 20px;
+        }
+        .json-code-block .j-key {
+            color: #7ec8e3;
+        }
+        .json-code-block .j-string {
+            color: #c9a84c;
+        }
+        .json-code-block .j-bracket {
+            color: #8b8fa3;
+        }
+        .json-code-block .j-colon {
+            color: #aab;
+        }
+        .json-code-block .j-number {
+            color: #e8a87c;
+        }
+
+        .copy-btn-float {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 3;
+            background: var(--surface3);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-dim);
+            border-radius: 8px;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .copy-btn-float:hover {
+            border-color: var(--gold);
+            color: var(--gold-light);
+        }
+        .copied-flash {
+            animation: flashGreen 0.6s ease-out;
+        }
+        @keyframes flashGreen {
+            0% {
+                background: rgba(76, 175, 132, 0.5);
+            }
+            100% {
+                background: var(--surface3);
+            }
+        }
+
+        /* ── Toast ── */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            pointer-events: none;
+        }
+        .toast {
+            background: var(--surface3);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            padding: 10px 22px;
+            color: var(--text-bright);
+            font-size: 0.85rem;
+            font-weight: 600;
+            animation: toastIn 0.4s ease-out, toastOut 0.3s ease-in 2.2s forwards;
+            pointer-events: auto;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(20px);
+        }
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        @keyframes toastOut {
+            from {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.85);
+            }
+        }
+
+        /* ── RTL fix for specific elements ── */
+        [dir="ltr"] {
+            direction: ltr;
+            text-align: left;
+        }
+
+        /* ── Glow line separator ── */
+        .glow-sep {
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border), transparent);
+            margin: 4px 0;
+        }
+
+        /* ── Focus highlight animation ── */
+        @keyframes subtleGlow {
+            0%,
+            100% {
+                box-shadow: 0 0 0 0px rgba(212, 168, 83, 0);
+            }
+            50% {
+                box-shadow: 0 0 0 8px rgba(212, 168, 83, 0.03);
+            }
+        }
+        .panel.highlight-pulse {
+            animation: subtleGlow 2s ease-in-out;
+        }
+
+        /* ── Responsive fine-tuning ── */
+        @media (max-width: 768px) {
+            .app-container {
+                width: 98%;
+                margin: 10px auto;
+                gap: 12px;
+            }
+            .panel {
+                min-height: auto;
+                padding: 14px;
+            }
+            .terms-scroll {
+                max-height: 220px;
+            }
+            .input-textarea {
+                min-height: 180px;
+            }
+            .json-code-block {
+                max-height: 300px;
+            }
+            .header {
+                padding: 14px 16px;
+            }
+            .header-title {
+                font-size: 1.2rem;
+            }
+            .logo-icon {
+                width: 38px;
+                height: 38px;
+                font-size: 18px;
+                border-radius: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background effects -->
+    <div class="bg-orbs">
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+    </div>
+    <div class="grid-overlay"></div>
+
+    <!-- Toast container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- App -->
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <div class="logo-icon">📚</div>
+                <div>
+                    <div class="header-title">معجم المصطلحات القانونية</div>
+                    <div class="header-subtitle">Glossary to JSON Converter</div>
+                </div>
+            </div>
+            <div class="stats-badge">
+                <span class="stats-dot"></span>
+                <span>عدد المصطلحات</span>
+                <span class="count-num" id="termCount">0</span>
+            </div>
+        </header>
+
+        <!-- Main Grid -->
+        <div class="main-grid">
+            <!-- Panel 1: Input -->
+            <div class="panel" id="inputPanel">
+                <div class="panel-header">
+                    <div class="panel-icon input">📥</div>
+                    <span class="panel-title">إدخال المصطلحات</span>
+                    <span class="panel-badge">Input</span>
+                </div>
+                <textarea class="input-textarea" id="glossaryInput" placeholder="paste glossary text here...
+            Example formats:
+
+            Onerous contract
+            عقد معاوضة
+
+            Gratuitous contract
+            عقد تبرع/عقد هبة
+
+            --- or table format ---
+            Term	Translation
+            Commercial Law	القانون التجاري
+            Commercial Acts	الأعمال التجارية"></textarea>
+                <div class="btn-row">
+                    <button class="btn btn-primary" onclick="parseGlossary()" title="تحليل النص واستخراج المصطلحات">
+                        🔍 تحليل Parse
+                    </button>
+                    <button class="btn btn-outline btn-sm" onclick="cleanInputText()" title="تنسيق النص وإزالة السطور الفارغة والفواصل">
+                        ✨ تنسيق
+                    </button>
+                    <button class="btn btn-outline" onclick="clearAll()">
+                        🗑️ مسح الكل
+                    </button>
+                    <button class="btn btn-outline btn-sm" onclick="loadSample()">
+                        📋 نموذج تجريبي
+                    </button>
+                </div>
+            </div>
+
+            <!-- Panel 2: Terms Table -->
+            <div class="panel" id="tablePanel">
+                <div class="panel-header">
+                    <div class="panel-icon table">📋</div>
+                    <span class="panel-title">المصطلحات المستخرجة</span>
+                    <span class="panel-badge" id="tableBadge">0 مصطلحات</span>
+                </div>
+                <div class="terms-scroll" id="termsScroll">
+                    <div class="empty-state" id="emptyState">
+                        <span class="empty-icon">📭</span>
+                        لا توجد مصطلحات بعد
+                        <br><small>قم بلصق النص واضغط "تحليل"</small>
+                    </div>
+                    <table class="terms-table" id="termsTable" style="display:none;">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>English Term</th>
+                                <th>الترجمة العربية</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="termsTbody"></tbody>
+                    </table>
+                </div>
+                <div class="btn-row" style="margin-top:auto;">
+                    <button class="btn btn-outline btn-sm" onclick="addTermRow()">
+                        ➕ إضافة صف
+                    </button>
+                    <button class="btn btn-outline btn-sm" onclick="syncTableToJSON()">
+                        🔄 مزامنة JSON
+                    </button>
+                </div>
+            </div>
+
+            <!-- Panel 3: JSON Preview -->
+            <div class="panel json-panel" id="jsonPanel">
+                <div class="panel-header">
+                    <div class="panel-icon json">{ }</div>
+                    <span class="panel-title">معاينة JSON</span>
+                    <span class="panel-badge">Preview</span>
+                </div>
+                <div class="json-preview-wrap">
+                    <div class="json-preview-header">
+                        <span class="json-dot red"></span>
+                        <span class="json-dot yellow"></span>
+                        <span class="json-dot green"></span>
+                        <span style="margin-right:auto;">glossary.json</span>
+                        <button class="copy-btn-float" onclick="copyJSON()" title="نسخ JSON">
+                            📋 نسخ
+                        </button>
+                    </div>
+                    <pre class="json-code-block" id="jsonPreview"><span class="j-bracket">[</span>
+                        <span class="j-bracket">]</span></pre>
+                </div>
+                <div class="btn-row">
+                    <button class="btn btn-primary" onclick="copyJSON()">
+                        📋 نسخ JSON
+                    </button>
+                    <button class="btn btn-outline" onclick="downloadJSON()">
+                        💾 تحميل ملف JSON
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ──────────────────────────────────────
+        //  State
+        // ──────────────────────────────────────
+        let glossaryTerms = []; // { en: string, ar: string }
+
+        // ──────────────────────────────────────
+        //  DOM refs
+        // ──────────────────────────────────────
+        const glossaryInput = document.getElementById('glossaryInput');
+        const termsTable = document.getElementById('termsTable');
+        const termsTbody = document.getElementById('termsTbody');
+        const termsScroll = document.getElementById('termsScroll');
+        const emptyState = document.getElementById('emptyState');
+        const jsonPreview = document.getElementById('jsonPreview');
+        const termCountEl = document.getElementById('termCount');
+        const tableBadge = document.getElementById('tableBadge');
+        const toastContainer = document.getElementById('toastContainer');
+
+        // ──────────────────────────────────────
+        //  Toast
+        // ──────────────────────────────────────
+        function showToast(msg, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            const icons = { info: 'ℹ️', success: '✅', error: '❌' };
+            toast.textContent = `${icons[type] || 'ℹ️'} ${msg}`;
+            toastContainer.appendChild(toast);
+            setTimeout(() => toast.remove(), 2600);
+        }
+
+        // ──────────────────────────────────────
+        //  JSON Syntax Highlighting
+        // ──────────────────────────────────────
+        function highlightJSON(jsonStr) {
+            // Escape HTML entities
+            let escaped = jsonStr
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+
+            // Apply syntax highlighting
+            let result = '';
+            let i = 0;
+            const len = escaped.length;
+
+            while (i < len) {
+                // Brackets
+                if (/[\[\]{}]/.test(escaped[i])) {
+                    result += `<span class="j-bracket">${escaped[i]}</span>`;
+                    i++;
+                    continue;
+                }
+                // Colon
+                if (escaped[i] === ':') {
+                    result += `<span class="j-colon">:</span>`;
+                    i++;
+                    continue;
+                }
+                // Strings (between quotes)
+                if (escaped[i] === '"') {
+                    let j = i + 1;
+                    while (j < len && escaped[j] !== '"') {
+                        if (escaped[j] === '\\') j++; // skip escaped char
+                        j++;
+                    }
+                    if (j < len) j++; // include closing quote
+                    const fullStr = escaped.substring(i, j);
+
+                    // Determine if this is a key (followed by colon) or value
+                    let after = '';
+                    let k = j;
+                    while (k < len && /\s/.test(escaped[k])) k++;
+                    if (k < len && escaped[k] === ':') {
+                        after = ':';
+                    }
+                    // Check if it's a key (preceded by { or , with whitespace)
+                    let before = '';
+                    let b = i - 1;
+                    while (b >= 0 && /\s/.test(escaped[b])) b--;
+                    if (b >= 0 && (escaped[b] === '{' || escaped[b] === ',')) {
+                        // It's a key
+                        result += `<span class="j-key">${fullStr}</span>`;
+                    } else {
+                        result += `<span class="j-string">${fullStr}</span>`;
+                    }
+                    i = j;
+                    continue;
+                }
+                // Numbers
+                if (/-?\d/.test(escaped[i]) && (i === 0 || /[\s:,\[\]{}]/.test(escaped[i - 1] || ' '))) {
+                    let j = i;
+                    while (j < len && /[\d.eE+\-]/.test(escaped[j])) j++;
+                    const numStr = escaped.substring(i, j);
+                    if (/^-?\d+(\.\d+)?([eE][+\-]?\d+)?$/.test(numStr)) {
+                        result += `<span class="j-number">${numStr}</span>`;
+                        i = j;
+                        continue;
+                    }
+                }
+                // Default
+                result += escaped[i];
+                i++;
+            }
+            return result;
+        }
+
+        function updateJSONPreview() {
+            const jsonStr = JSON.stringify(glossaryTerms, null, 4);
+            const highlighted = highlightJSON(jsonStr);
+            jsonPreview.innerHTML = highlighted;
+            updateCounts();
+        }
+
+        function updateCounts() {
+            const count = glossaryTerms.length;
+            termCountEl.textContent = count;
+            tableBadge.textContent = `${count} مصطلحات`;
+        }
+
+        // ──────────────────────────────────────
+        //  Render terms table
+        // ──────────────────────────────────────
+        function renderTable() {
+            termsTbody.innerHTML = '';
+            if (glossaryTerms.length === 0) {
+                termsTable.style.display = 'none';
+                emptyState.style.display = 'block';
+            } else {
+                termsTable.style.display = 'table';
+                emptyState.style.display = 'none';
+                glossaryTerms.forEach((term, idx) => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                <td class="row-num">${idx + 1}</td>
+                <td class="en-cell" contenteditable="true" data-idx="${idx}" data-field="en"
+                    onblur="updateTermFromCell(this, ${idx}, 'en')"
+                    onkeydown="handleCellKey(event, this, ${idx}, 'en')">${escapeHTML(term.en)}</td>
+                <td class="ar-cell" contenteditable="true" data-idx="${idx}" data-field="ar"
+                    onblur="updateTermFromCell(this, ${idx}, 'ar')"
+                    onkeydown="handleCellKey(event, this, ${idx}, 'ar')">${escapeHTML(term.ar)}</td>
+                <td><button class="btn-danger-sm" onclick="deleteTerm(${idx})" title="حذف">✕</button></td>
+              `;
+                    termsTbody.appendChild(tr);
+                });
+            }
+            updateJSONPreview();
+            updateCounts();
+        }
+
+        function escapeHTML(str) {
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function updateTermFromCell(cell, idx, field) {
+            const newVal = cell.textContent.trim();
+            if (newVal && glossaryTerms[idx]) {
+                glossaryTerms[idx][field] = newVal;
+                updateJSONPreview();
+                // Don't re-render table to avoid losing focus
+            } else if (!newVal && glossaryTerms[idx]) {
+                // Revert to old value
+                cell.textContent = glossaryTerms[idx][field];
+            }
+        }
+
+        function handleCellKey(event, cell, idx, field) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                cell.blur();
+                // Move to next row same field
+                const nextIdx = idx + 1;
+                if (nextIdx < glossaryTerms.length) {
+                    setTimeout(() => {
+                        const nextCell = termsTbody.querySelector(
+                            `td[data-idx="${nextIdx}"][data-field="${field}"]`);
+                        if (nextCell) nextCell.focus();
+                    }, 50);
+                }
+            }
+            if (event.key === 'Escape') {
+                cell.textContent = glossaryTerms[idx][field];
+                cell.blur();
+            }
+        }
+
+        function deleteTerm(idx) {
+            if (idx >= 0 && idx < glossaryTerms.length) {
+                const term = glossaryTerms[idx];
+                glossaryTerms.splice(idx, 1);
+                renderTable();
+                showToast(`تم حذف: "${term.en}"`, 'info');
+            }
+        }
+
+        function addTermRow() {
+            glossaryTerms.push({ en: 'New Term', ar: 'ترجمة جديدة' });
+            renderTable();
+            // Focus the new row's English cell
+            setTimeout(() => {
+                const lastCell = termsTbody.querySelector(`td[data-idx="${glossaryTerms.length - 1}"][data-field="en"]`);
+                if (lastCell) {
+                    lastCell.focus();
+                    // Select all text
+                    const range = document.createRange();
+                    range.selectNodeContents(lastCell);
+                    const sel = window.getSelection();
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                }
+            }, 100);
+            termsScroll.scrollTop = termsScroll.scrollHeight;
+        }
+
+        function syncTableToJSON() {
+            // Read all cells and update
+            const enCells = termsTbody.querySelectorAll('td[data-field="en"]');
+            const arCells = termsTbody.querySelectorAll('td[data-field="ar"]');
+            enCells.forEach((cell, i) => {
+                if (glossaryTerms[i]) {
+                    glossaryTerms[i].en = cell.textContent.trim() || glossaryTerms[i].en;
+                }
+            });
+            arCells.forEach((cell, i) => {
+                if (glossaryTerms[i]) {
+                    glossaryTerms[i].ar = cell.textContent.trim() || glossaryTerms[i].ar;
+                }
+            });
+            updateJSONPreview();
+            showToast('تمت مزامنة JSON بنجاح', 'success');
+        }
+
+        // ──────────────────────────────────────
+        //  Parser
+        // ──────────────────────────────────────
+        function parseGlossary() {
+            const raw = glossaryInput.value.trim();
+            if (!raw) {
+                showToast('الرجاء إدخال النص أولاً', 'error');
+                return;
+            }
+
+            // تقسيم النص إلى كتل معجمية (باستخدام "Glossary of Terms:" كعلامة)
+            const glossaryMarker = /^Glossary of Terms:/im;
+            const blocks = raw.split(glossaryMarker);
+            // أول جزء قبل أول "Glossary of Terms:" غالبًا مافيهوش مصطلحات
+            const glossaryBlocks = blocks.slice(1); // تجاهل الجزء الأول
+
+            const allTerms = [];
+
+            for (const block of glossaryBlocks) {
+                const lines = block.split(/\r?\n/).filter(l => l.trim().length > 0);
+                if (lines.length === 0) continue;
+
+                // نحاول نحدد إذا كانت الكتلة جدول بـ tabs
+                const tabCount = lines.filter(l => /\t/.test(l)).length;
+                const isTableFormat = tabCount >= lines.length * 0.3;
+
+                if (isTableFormat) {
+                    // معالجة الجدول: كل سطر يحوى مفتاحين على الأقل تفصلهم tabs
+                    for (const line of lines) {
+                        const trimmed = line.trim();
+                        if (/^(Term|Translation|مصطلح|ترجمة)$/i.test(trimmed)) continue;
+                        const parts = trimmed.split(/\t+/);
+                        if (parts.length >= 2) {
+                            const en = parts[0].trim();
+                            const ar = parts[1].trim();
+                            if (en && ar && en.length > 1 && ar.length > 1) {
+                                allTerms.push({ en, ar });
+                            }
+                        }
+                    }
+                } else {
+                    // معالجة الأسطر المتبادلة (English ثم Arabic)
+                    const pairs = [];
+                    for (let i = 0; i < lines.length; i++) {
+                        const line = lines[i].trim();
+                        // تجاهل العناوين الفرعية
+                        if (/^(Term|Translation|مصطلح|ترجمة|Chapter|Part|Section|Subject|Exercise|Definition|Key Differences)/i.test(line)) continue;
+                        // تجاهل الأسطر الطويلة اللى غالبًا فقرات (أكثر من 120 حرف)
+                        if (line.length > 120) continue;
+                        
+                        // نحاول زوج English/Arabic
+                        if (i + 1 < lines.length) {
+                            const nextLine = lines[i+1].trim();
+                            const hasLatin = /[a-zA-Z]/.test(line);
+                            const hasArabic = /[\u0600-\u06FF]/.test(nextLine);
+                            if (hasLatin && hasArabic && line.length > 1 && nextLine.length > 1) {
+                                pairs.push({ en: line, ar: nextLine });
+                                i++; // تخطى السطر العربى
+                            }
+                        }
+                    }
+                    allTerms.push(...pairs);
+                }
+            }
+
+            if (allTerms.length === 0) {
+                showToast('لم يتم العثور على أية مصطلحات. تأكد من تنسيق النص.', 'error');
+                return;
+            }
+
+            // إزالة التكرارات بناءً على المصطلح الإنجليزى (تجاهل حالة الأحرف والمسافات)
+            const unique = [];
+            const seen = new Set();
+            for (const term of allTerms) {
+                const key = term.en.trim().toLowerCase();
+                if (!seen.has(key)) {
+                    seen.add(key);
+                    unique.push(term);
+                }
+            }
+
+            glossaryTerms = unique;
+            renderTable();
+            updateJSONPreview();
+            showToast(`تم استخراج ${glossaryTerms.length} مصطلح بنجاح`, 'success');
+            
+            // وميض للوحة JSON
+            const jsonPanel = document.getElementById('jsonPanel');
+            jsonPanel.classList.add('highlight-pulse');
+            setTimeout(() => jsonPanel.classList.remove('highlight-pulse'), 2100);
+        }
+
+        // ──────────────────────────────────────
+        //  Copy JSON
+        // ──────────────────────────────────────
+        function copyJSON() {
+            const jsonStr = JSON.stringify(glossaryTerms, null, 4);
+            if (glossaryTerms.length === 0) {
+                showToast('لا يوجد JSON لنسخه', 'error');
+                return;
+            }
+            navigator.clipboard.writeText(jsonStr).then(() => {
+                showToast('تم نسخ JSON إلى الحافظة! 📋', 'success');
+                // Flash the copy button
+                const copyBtn = document.querySelector('.copy-btn-float');
+                if (copyBtn) {
+                    copyBtn.classList.add('copied-flash');
+                    setTimeout(() => copyBtn.classList.remove('copied-flash'), 700);
+                }
+            }).catch(() => {
+                // Fallback
+                const textarea = document.createElement('textarea');
+                textarea.value = jsonStr;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showToast('تم نسخ JSON إلى الحافظة!', 'success');
+            });
+        }
+
+        // ──────────────────────────────────────
+        //  Download JSON
+        // ──────────────────────────────────────
+        function downloadJSON() {
+            if (glossaryTerms.length === 0) {
+                showToast('لا يوجد JSON لتحميله', 'error');
+                return;
+            }
+            const jsonStr = JSON.stringify(glossaryTerms, null, 4);
+            const blob = new Blob([jsonStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'glossary_terms.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('تم تحميل الملف! 💾', 'success');
+        }
+
+        // ──────────────────────────────────────
+        //  Clear all
+        // ──────────────────────────────────────
+        function clearAll() {
+            glossaryTerms = [];
+            glossaryInput.value = '';
+            renderTable();
+            updateJSONPreview();
+            showToast('تم مسح جميع البيانات', 'info');
+        }
+
+        // ──────────────────────────────────────
+        //  Load sample
+        // ──────────────────────────────────────
+        function loadSample() {
+            const sample = `Glossary of Terms:
+
+        Onerous contract
+        عقد معاوضة
+
+        Gratuitous contract
+        عقد تبرع/عقد هبة
+
+        --- الصفحة 11 ---
+        Term	Translation
+
+        Commercial Law	القانون التجاري
+        Commercial Acts	الأعمال التجارية
+        Merchant	تاجر
+        Autonomy	ذاتية
+        Credit	الائتمان
+        Rapidity	السرعة
+        Legal Relations	العلاقات القانونية
+        Scope of Law	نطاق تطبيق القانون
+
+        The theory of law	نظریة القانون
+        Legal rule	قاعدة قانونیة`;
+            glossaryInput.value = sample;
+            showToast('تم تحميل النموذج التجريبي', 'info');
+            // Auto-parse after a short delay
+            setTimeout(parseGlossary, 300);
+        }
+
+        // ──────────────────────────────────────
+        //  Live input detection (parse on paste)
+        // ──────────────────────────────────────
+        glossaryInput.addEventListener('paste', () => {
+            setTimeout(() => {
+                const raw = glossaryInput.value.trim();
+                if (raw.length > 50 && glossaryTerms.length === 0) {
+                    // Auto-parse if no terms exist yet and substantial text is pasted
+                    parseGlossary();
+                }
+            }, 200);
+        });
+
+        // ──────────────────────────────────────
+        //  Keyboard shortcut: Ctrl+Enter to parse
+        // ──────────────────────────────────────
+        glossaryInput.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                parseGlossary();
+            }
+        });
+
+        // ──────────────────────────────────────
+        //  Global keyboard shortcut: Ctrl+S to download
+        // ──────────────────────────────────────
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                downloadJSON();
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key === 'c' && document.activeElement === document.body) {
+                // Only if no text is selected and user isn't in an input
+                if (!window.getSelection().toString()) {
+                    e.preventDefault();
+                    copyJSON();
+                }
+            }
+        });
+
+        function cleanInputText() {
+            let raw = glossaryInput.value;
+            if (!raw.trim()) {
+                showToast('لا يوجد نص لتنظيفه', 'error');
+                return;
+            }
+            let lines = raw.split(/\r?\n/);
+            const cleaned = [];
+            for (let line of lines) {
+                line = line.trim();
+                // تجاهل الأسطر الفارغة والفواصل وعلامات الصفحات
+                if (line === '' || /^---/.test(line) || /^page/i.test(line) || /^\d+$/.test(line)) continue;
+                // ضغط المسافات والتبويبات
+                line = line.replace(/\t+/g, ' ').replace(/\s{2,}/g, ' ').trim();
+                if (line.length > 0) cleaned.push(line);
+            }
+            glossaryInput.value = cleaned.join('\n');
+            showToast('تم تنسيق النص ✅', 'success');
+        }
+
+        // ──────────────────────────────────────
+        //  Initialize
+        // ──────────────────────────────────────
+        function init() {
+            renderTable();
+            updateJSONPreview();
+            // Focus the textarea
+            glossaryInput.focus();
+        }
+
+        init();
+
+        console.log('%c📚 Glossary to JSON Converter %cReady',
+            'font-size:1.2em;color:#d4a853;', 'color:#aaa;');
+        console.log('%c✨ Features: Parse • Edit • Live Preview • Copy • Download',
+            'color:#8ab4d8;');
+        console.log('%c💡 Tip: Paste your glossary text and press Ctrl+Enter to parse',
+            'color:#8cc87a;');
+    </script>
+</body>
+</html>
