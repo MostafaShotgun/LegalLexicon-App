@@ -1605,9 +1605,9 @@
                 return a;
             }
 
-            function generateExamQuestions() {
+            function generateExamQuestions(questionCount) {
                 const savedTermObjs = legalTerms.filter(t => isTermSaved(t.en));
-                const questionCount = Math.min(savedTermObjs.length, 50);
+                questionCount = Math.min(savedTermObjs.length, questionCount);
                 const usedENs = new Set();
                 const questions = [];
 
@@ -1639,12 +1639,20 @@
                     await showModal('يجب حفظ 5 مصطلحات على الأقل لبدء الامتحان. احفظ بعض المصطلحات أولاً ⭐');
                     return;
                 }
-                const confirmed = await showModal(
-                    `هل تريد بدء الامتحان؟ عدد الأسئلة: ${Math.min(savedTerms.length, 50)} سؤال. اضغط تأكيد للمتابعة.`
-                    );
+
+                const maxQuestions = Math.min(savedTerms.length, 50);
+                const input = prompt(`📝 أدخل عدد الأسئلة المطلوب (من 1 إلى ${maxQuestions}):`, maxQuestions);
+                let questionCount = maxQuestions;
+                if (input !== null) {
+                const parsed = parseInt(input, 10);
+                if (!isNaN(parsed) && parsed >= 1 && parsed <= maxQuestions) {
+                        questionCount = parsed;
+                    }
+                }
+                const confirmed = await showModal(`هل تريد بدء الامتحان؟ عدد الأسئلة: ${questionCount} سؤال. اضغط تأكيد للمتابعة.`);
                 if (!confirmed) return;
 
-                const questions = generateExamQuestions();
+                const questions = generateExamQuestions(questionCount);
                 examState = {
                     questions,
                     currentIndex: 0,
