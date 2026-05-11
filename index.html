@@ -656,6 +656,27 @@
             background: var(--border);
         }
 
+        /* تنسيق حقل إدخال رقم الأسئلة */
+        .exam-number-input {
+            width: 120px;
+            padding: 0.6rem;
+            font-size: 1.2rem;
+            text-align: center;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--surface);
+            color: var(--text);
+            font-family: var(--font-sans);
+            outline: none;
+            transition: all var(--transition);
+            margin: 0.5rem auto 0;
+            display: block;
+        }
+        .exam-number-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-subtle);
+        }
+
         /* ──────────────── EXAM MODE ──────────────── */
         .exam-container {
             display: none;
@@ -1056,6 +1077,19 @@
             <div class="modal-actions">
                 <button class="btn btn-primary" id="modalConfirm">تأكيد</button>
                 <button class="btn btn-ghost" id="modalCancel">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال إدخال عدد الأسئلة -->
+    <div class="modal-overlay" id="numberInputOverlay">
+        <div class="modal-dialog">
+            <p id="numberInputMessage"></p>
+            <input type="number" id="numberInputField" class="exam-number-input" min="1" value="10" />
+            <p class="error-msg" id="numberInputError" style="color:var(--danger); font-size:0.85rem; display:none;"></p>
+            <div class="modal-actions" style="margin-top:1rem;">
+                <button class="btn btn-primary" id="numberInputConfirm">تأكيد</button>
+                <button class="btn btn-ghost" id="numberInputCancel">إلغاء</button>
             </div>
         </div>
     </div>
@@ -1605,15 +1639,76 @@
                 return a;
             }
 
+            function showNumberInputModal(message, defaultValue, maxValue) {
+                return new Promise((resolve) => {
+                    const overlay = document.getElementById('numberInputOverlay');
+                    const msgEl = document.getElementById('numberInputMessage');
+                    const inputEl = document.getElementById('numberInputField');
+                    const errorEl = document.getElementById('numberInputError');
+                    const confirmBtn = document.getElementById('numberInputConfirm');
+                    const cancelBtn = document.getElementById('numberInputCancel');
+            
+                    msgEl.textContent = message;
+                    inputEl.value = defaultValue;
+                    inputEl.max = maxValue;
+                    inputEl.min = 1;
+                    errorEl.style.display = 'none';
+                    overlay.classList.add('show');
+            
+                    function validate() {
+                        const val = parseInt(inputEl.value, 10);
+                        if (isNaN(val) || val < 1 || val > maxValue) {
+                            errorEl.textContent = `الرجاء إدخال رقم بين 1 و ${maxValue}`;
+                            errorEl.style.display = 'block';
+                            return false;
+                        }
+                        errorEl.style.display = 'none';
+                        return true;
+                    }
+            
+                    inputEl.addEventListener('input', validate);
+            
+                    function cleanup() {
+                        overlay.classList.remove('show');
+                        confirmBtn.removeEventListener('click', onConfirm);
+                        cancelBtn.removeEventListener('click', onCancel);
+                        overlay.removeEventListener('click', onClickOutside);
+                        inputEl.removeEventListener('input', validate);
+                    }
+            
+                    function onConfirm() {
+                        if (!validate()) return;
+                        const val = parseInt(inputEl.value, 10);
+                        cleanup();
+                        resolve(val);
+                    }
+            
+                    function onCancel() {
+                        cleanup();
+                        resolve(null); // إلغاء
+                    }
+            
+                    function onClickOutside(e) {
+                        if (e.target === overlay) {
+                            onCancel();
+                        }
+                    }
+            
+                    confirmBtn.addEventListener('click', onConfirm);
+                    cancelBtn.addEventListener('click', onCancel);
+                    overlay.addEventListener('click', onClickOutside);
+                });
+            }
+
             function generateExamQuestions(questionCount) {
                 const savedTermObjs = legalTerms.filter(t => isTermSaved(t.en));
                 questionCount = Math.min(savedTermObjs.length, questionCount);
                 const usedENs = new Set();
                 const questions = [];
-
-                const availablePool = [...savedTermObjs];
-                while (questions.length < questionCount && availablePool.length > 0) {
-                    const available = availablePool.filter(t => !usedENs.has(t.en));
+            
+                const pool = [...savedTermObjs];
+                while (questions.length < questionCount && pool.length > 0) {
+                    const available = pool.filter(t => !usedENs.has(t.en));
                     if (!available.length) break;
                     const term = available[Math.floor(Math.random() * available.length)];
                     usedENs.add(term.en);
@@ -1639,25 +1734,37 @@
                     await showModal('يجب حفظ 5 مصطلحات على الأقل لبدء الامتحان. احفظ بعض المصطلحات أولاً ⭐');
                     return;
                 }
-
-                const maxQuestions = Math.min(savedTerms.length, 50);
-                const input = prompt(`📝 أدخل عدد الأسئلة المطلوب (من 1 إلى ${maxQuestions}):`, maxQuestions);
-                let questionCount = maxQuestions;
-                if (input !== null) {
-                const parsed = parseInt(input, 10);
-                if (!isNaN(parsed) && parsed >= 1 && parsed <= maxQuestions) {
-                        questionCount = parsed;
-                    }
+            
+                const maxQuestions = Math.min(savedTerms.length, 100);
+                
+                const chosenCount = await showNumberInputModal(
+                    `📝 أدخل عدد الأسئلة المطلوب (من 1 إلى ${maxQuestions}):`,
+                    maxQuestions,
+                    maxQuestions
+                );
+            
+                if (chosenCount === null) {
+                    return;
                 }
-                const confirmed = await showModal(`هل تريد بدء الامتحان؟ عدد الأسئلة: ${questionCount} سؤال. اضغط تأكيد للمتابعة.`);
+            
+                const confirmed = await showModal(
+                    `هل تريد بدء الامتحان؟ عدد الأسئلة: ${chosenCount} سؤال. اضغط تأكيد للمتابعة.`
+                );
                 if (!confirmed) return;
 
-                const questions = generateExamQuestions(questionCount);
+                const secondsPerQuestion = 20;
+                const warningSeconds = chosenCount * secondsPerQuestion;
+                const dangerSeconds = Math.floor(warningSeconds * 1.5);
+
+            
+                const questions = generateExamQuestions(chosenCount);
                 examState = {
                     questions,
                     currentIndex: 0,
                     correctCount: 0,
                     answers: [],
+                    warningSeconds,
+                    dangerSeconds,
                 };
                 examSecondsElapsed = 0;
                 cardGrid.style.display = 'none';
@@ -1678,8 +1785,11 @@
                 const secs = examSecondsElapsed % 60;
                 timerEl.textContent = `⏱ ${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
                 timerEl.classList.remove('warning', 'danger');
-                if (examSecondsElapsed > 180) timerEl.classList.add('danger');
-                else if (examSecondsElapsed > 120) timerEl.classList.add('warning');
+                if (examSecondsElapsed > examState.dangerSeconds) {
+                    timerEl.classList.add('danger');
+                } else if (examSecondsElapsed > examState.warningSeconds) {
+                    timerEl.classList.add('warning');
+                }
             }
 
             function renderExamQuestion() {
